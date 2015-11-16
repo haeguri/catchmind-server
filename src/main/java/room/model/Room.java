@@ -7,8 +7,8 @@ public class Room {
 	int current_num;
 	int is_playing;
 	
-	public Room(int roomId, String title, int limit_num, int current_num, int is_playing) {
-		this.id = roomId;
+	public Room(int id, String title, int limit_num, int current_num, int is_playing) {
+		this.id = id;
 		this.title = title;
 		this.limit_num = limit_num;
 		this.current_num = current_num;

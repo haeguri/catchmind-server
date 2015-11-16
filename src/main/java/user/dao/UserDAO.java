@@ -2,10 +2,11 @@ package user.dao;
 
 import java.util.Set;
 
-import room.model.Room;
+import user.model.User;
+
 
 public interface UserDAO {
-	public void insert(Room room);
-	public Set<Room> findAllRoom();
-	public Room findByRoomId(int roomId);
+	public User signupUser(User user);
+	public Set<User> findAllUser();
+	public User findByUsername(String username);
 }

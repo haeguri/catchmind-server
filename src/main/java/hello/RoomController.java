@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +18,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import room.dao.RoomDAO;
+import user.dao.UserDAO;
 import room.model.Room;
+import user.model.User;
 
 import java.util.Set;
+import java.util.Map;
 
 @RestController
 public class RoomController {
@@ -43,8 +47,6 @@ public class RoomController {
 		System.out.println(roomDAO.findAllRoom());
 		return roomDAO.findAllRoom();
 	}
-	
-	
 
 	@RequestMapping(value = "/rooms/{roomId}", method = RequestMethod.GET)
 	public Room getRoomById(@PathVariable("roomId") String roomId) {
@@ -54,15 +56,26 @@ public class RoomController {
 	}
 	
 	@RequestMapping(value = "/room/make", method = RequestMethod.POST)
-	@ResponseBody
-	public Room createRoom(@ModelAttribute Room room) {
-		System.out.println("CreateRoom" + room);
+	public Room makeRoom(
+			@RequestParam("title") String title,
+			@RequestParam("limit_num") int limit_num,
+			@RequestParam("current_num") int current_num,
+			@RequestParam("is_playing") int is_playing)
+		{
+//		id, title등 8ㅕ8ㅑㅕ8ㅕㅑㅕㅑ8ㅕ78ㅑㅕ7Room 
+		Room room = roomDAO.insert(new Room(0, title, limit_num, current_num, is_playing));
+//		System.out.println("room:"+room);
+//		roomDAO.insert(new Room({
+//			
+//		}));
+//		System.out.println("CreateRoom" + roomId);
 //		Room room1 = roomDAO.insert(new Room(
 //					
 //				));
 //		return room1;
-		return null;
+		return room;
 	}
+
 	
 
 	// @RequestParam은 쿼리 스트링 파라메터 "name"의 값을 greeting() 메서드의 "name" 파라메터로 바인드한다.

@@ -1,6 +1,7 @@
 package room.dao;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,23 +20,28 @@ public class JdbcRoomDAO implements RoomDAO{
 		this.dataSource = dataSource;
 	}
 	
-	public void insert(Room room) {
+	public Room insert(Room room) {
 		String sql = "INSERT INTO ROOM " + 
-				"(id, title, limit_num, current_num, is_playing) " +
-				"VALUES (?, ?, ?, ?, ?)";
+				"(title, limit_num, current_num, is_playing) " +
+				"VALUES (?, ?, ?, ?)";
 		Connection conn = null;
 		
 		try {
 			conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1,  room.getId());
-			ps.setString(2, room.getTitle());
-			ps.setInt(3, room.getLimit_num());
-			ps.setInt(4, room.getCurrent_num());
-			ps.setInt(5,  room.getIs_playing());
+			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, room.getTitle());
+			ps.setInt(2, room.getLimit_num());
+			ps.setInt(3, room.getCurrent_num());
+			ps.setInt(4,  room.getIs_playing());
 			ps.executeUpdate();
+			ResultSet rs = ps.getGeneratedKeys();
+			if (rs.next()) {
+				room.setId(rs.getInt(1));
+			}
+			rs.close();
 			ps.close();
-	
+			
+			return room;
 		} catch(SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -43,9 +49,9 @@ public class JdbcRoomDAO implements RoomDAO{
 				try {
 					conn.close();
 				} catch (SQLException e) {
-					
 				}
 			}
+			
 		}
 	}
 	
