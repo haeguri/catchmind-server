@@ -58,7 +58,7 @@ public class JdbcRoomDAO implements RoomDAO{
 		}
 	}
 	
-	public Set<Room> findAllRoom() {
+	public Set<Room> findWatingRoom() {
 		
 		String sql = "SELECT * FROM room WHERE is_playing=0";
 		Room room = null;
@@ -107,8 +107,7 @@ public class JdbcRoomDAO implements RoomDAO{
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1,  roomId);
-			ps.executeUpdate();
-			ResultSet rs = ps.getGeneratedKeys();
+			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
 				room = new Room(
 						rs.getInt("id"),
@@ -117,7 +116,6 @@ public class JdbcRoomDAO implements RoomDAO{
 						rs.getInt("current_num"),
 						rs.getInt("is_playing")
 				);
-				System.out.println("Before return" + room);
 			}
 			rs.close();
 			ps.close();
@@ -133,30 +131,39 @@ public class JdbcRoomDAO implements RoomDAO{
 		}
 	}
 	
-	public Room enterRoom(int roomId){
-		String sql = "update room SET current_room = current_room + 1 WHERE id = ?";
-	
-		Room room = null;
+	public Boolean enterRoom(int roomId){
+		String selectSql = "SELECT * FROM room WHERE id=?";
+		String updateSql = "update room SET current_num = current_num+1 WHERE id = ?";
 		Connection conn = null;
 		
+//		우선 입장하려는 방의 정보를 받아오고, current_num(현재인원)이 limit_num(제한인원)보다 크거나 같으면 false를 반환한다.  
 		try {
 			conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(sql);
+			PreparedStatement ps = conn.prepareStatement(selectSql);
+			ps.setInt(1,  roomId);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				if ( rs.getInt("current_num") >= rs.getInt("limit_num") )
+					return false;
+			}
+			ps.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+//		current_num이 limit_num보다 작을 때에만 방의 current_num 업데이트하고 true를 반환한다.
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(updateSql);
 			ps.setInt(1,  roomId);
 			ps.executeUpdate();
-			ResultSet rs = ps.getGeneratedKeys();
-			if(rs.next()) {
-				room = new Room(
-						rs.getInt("id"),
-						rs.getString("title"),
-						rs.getInt("limit_num"),
-						rs.getInt("current_num"),
-						rs.getInt("is_playing")
-				);
-			}
-			rs.close();
 			ps.close();
-			return room;
+			return true;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {

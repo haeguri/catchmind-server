@@ -1,11 +1,16 @@
 package hello;
 
+import java.util.Set;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import room.model.Room;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,5 +49,17 @@ public class UserController {
 	{
 		User user = userDAO.signupUser(new User(0, username, password, 0));
 		return new ResponseEntity<User>(user, responseHeaders, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public ResponseEntity<Set<User>> getRooms() {
+		System.out.println(userDAO.findWatingUsers());
+		
+		Set<User> users = userDAO.findWatingUsers();
+		if( users.isEmpty() == false) {
+			return new ResponseEntity<Set<User>> (users, responseHeaders, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Set<User>> (users, responseHeaders, HttpStatus.NOT_FOUND);
+		}
 	}
 }

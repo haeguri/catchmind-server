@@ -30,6 +30,7 @@ public class RoomController {
 	private static final ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
 	private static final RoomDAO roomDAO = (RoomDAO) context.getBean("roomDAO");
 	private static final UserDAO userDAO = (UserDAO) context.getBean("userDAO");
+	private static final HttpHeaders responseHeaders = new HttpHeaders();
 
 	// /greeting에 대한 요청들을 greeting() 메서드로 매핑된다.
 	// @RequestMapping GET, PUT, POST 등의 메서드들을 가리지 않는다.
@@ -44,16 +45,29 @@ public class RoomController {
 	// }
 
 	@RequestMapping(value = "/rooms", method = RequestMethod.GET)
-	public Set<Room> getRooms() {
-		System.out.println(roomDAO.findAllRoom());
-		return roomDAO.findAllRoom();
+	public ResponseEntity<Set<Room>> getRooms() {
+		System.out.println(roomDAO.findWatingRoom());
+		
+		Set<Room> rooms = roomDAO.findWatingRoom();
+		if( rooms.isEmpty() == false) {
+			return new ResponseEntity<Set<Room>> (rooms, responseHeaders, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Set<Room>> (null, responseHeaders, HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@RequestMapping(value = "/rooms/{roomId}", method = RequestMethod.GET)
-	public Room getRoomById(@PathVariable("roomId") String roomId) {
-		System.out.println("getRoomById");
-		Room room1 = roomDAO.findByRoomId(Integer.parseInt(roomId));
+	public Room getRoomById(@PathVariable("roomId") int roomId) {
+		
+		Room room1 = roomDAO.findByRoomId(roomId);
 		return room1;
+	}
+
+	@RequestMapping(value = "/room/{roomId}/users", method = RequestMethod.GET)
+	public ResponseEntity<Set<User>> findUsersInRoom(@PathVariable("roomId") int roomId) {
+		Set<User> users = userDAO.findUsersInRoom(roomId);
+		
+		return new ResponseEntity<Set<User>>(users, responseHeaders, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/room/make", method = RequestMethod.POST)
@@ -71,14 +85,17 @@ public class RoomController {
 	}
 	
 	@RequestMapping(value = "/room/enter", method = RequestMethod.POST)
-	public Room enterRoom(
+	public ResponseEntity<Boolean> enterRoom(
 			@RequestParam("user_id") int user_id,
 			@RequestParam("room_id") int room_id)
 	{
-		Room room = roomDAO.enterRoom(room_id)
-		userDAO.updateCurrentRoom(room_id, user_id);
-		
-		return room;
+		if (roomDAO.enterRoom(room_id) == true) {
+			userDAO.updateCurrentRoom(room_id, user_id);
+			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.BAD_REQUEST);
+		}
+//		입장한 방의 id를 사용자의 current_room 필드에 저장한다.
 	}
 	
 

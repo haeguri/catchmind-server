@@ -6,7 +6,7 @@ import room.model.Room;
 
 public interface RoomDAO {
 	public Room makeRoom(Room room);
-	public Set<Room> findAllRoom();
+	public Set<Room> findWatingRoom();
 	public Room findByRoomId(int roomId);
-	public Room enterRoom(int room_id);
+	public Boolean enterRoom(int room_id);
 }

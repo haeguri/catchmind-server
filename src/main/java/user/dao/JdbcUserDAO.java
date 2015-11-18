@@ -53,9 +53,9 @@ public class JdbcUserDAO implements UserDAO{
 		}
 	}
 	
-	public Set<User> findAllUser() {
+	public Set<User> findWatingUsers() {
 		
-		String sql = "SELECT * FROM user";
+		String sql = "SELECT * FROM user WHERE current_room IS NULL";
 		User user = null;
 		Set<User> users = new HashSet<>();
 		
@@ -151,7 +151,45 @@ public class JdbcUserDAO implements UserDAO{
 					conn.close();
 				} catch (SQLException e) {}
 			}
-		}
-		
+		}	
 	}
+
+public Set<User> findUsersInRoom(int roomId) {
+		
+		String sql = "SELECT * FROM user where current_room = ?";
+		User user = null;
+		Set<User> users = new HashSet<>();
+		
+		Connection conn = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, roomId);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				user = new User(
+						rs.getInt("id"),
+						rs.getString("username"),
+						rs.getString("password"),
+						rs.getInt("current_room")
+				);
+				users.add(user);
+			}
+			rs.close();
+			ps.close();
+			System.out.println(Arrays.toString(users.toArray()));
+			return users;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+	
+	
 }
