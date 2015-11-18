@@ -20,10 +20,11 @@ public class JdbcRoomDAO implements RoomDAO{
 		this.dataSource = dataSource;
 	}
 	
-	public Room insert(Room room) {
+	public Room makeRoom(Room room) {
 		String sql = "INSERT INTO ROOM " + 
 				"(title, limit_num, current_num, is_playing) " +
 				"VALUES (?, ?, ?, ?)";
+				
 		Connection conn = null;
 		
 		try {
@@ -37,6 +38,8 @@ public class JdbcRoomDAO implements RoomDAO{
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
 				room.setId(rs.getInt(1));
+				//
+				
 			}
 			rs.close();
 			ps.close();
@@ -57,7 +60,7 @@ public class JdbcRoomDAO implements RoomDAO{
 	
 	public Set<Room> findAllRoom() {
 		
-		String sql = "SELECT * FROM ROOM";
+		String sql = "SELECT * FROM room WHERE is_playing=0";
 		Room room = null;
 		Set<Room> rooms = new HashSet<>();
 		
@@ -104,7 +107,8 @@ public class JdbcRoomDAO implements RoomDAO{
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1,  roomId);
-			ResultSet rs = ps.executeQuery();
+			ps.executeUpdate();
+			ResultSet rs = ps.getGeneratedKeys();
 			if(rs.next()) {
 				room = new Room(
 						rs.getInt("id"),
@@ -114,6 +118,41 @@ public class JdbcRoomDAO implements RoomDAO{
 						rs.getInt("is_playing")
 				);
 				System.out.println("Before return" + room);
+			}
+			rs.close();
+			ps.close();
+			return room;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+	
+	public Room enterRoom(int roomId){
+		String sql = "update room SET current_room = current_room + 1 WHERE id = ?";
+	
+		Room room = null;
+		Connection conn = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,  roomId);
+			ps.executeUpdate();
+			ResultSet rs = ps.getGeneratedKeys();
+			if(rs.next()) {
+				room = new Room(
+						rs.getInt("id"),
+						rs.getString("title"),
+						rs.getInt("limit_num"),
+						rs.getInt("current_num"),
+						rs.getInt("is_playing")
+				);
 			}
 			rs.close();
 			ps.close();

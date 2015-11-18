@@ -93,7 +93,6 @@ public class JdbcUserDAO implements UserDAO{
 		
 		String sql = "SELECT * FROM user WHERE username = ?;";
 		
-
 		User user = null;
 		Connection conn = null;
 		
@@ -129,5 +128,30 @@ public class JdbcUserDAO implements UserDAO{
 				} catch (SQLException e) {}
 			}
 		}
+	}
+	
+	public void updateCurrentRoom(int roomId, int userId) {
+		String sql = "UPDATE user SET current_room = ? WHERE id = ?";
+		
+		Connection conn = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, roomId);
+			ps.setInt(2, userId);
+			ps.executeUpdate();
+			
+			ps.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+		
 	}
 }

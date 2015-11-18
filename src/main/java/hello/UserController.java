@@ -18,6 +18,7 @@ import user.model.User;
 public class UserController {
 	private static final ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
 	private static final UserDAO userDAO = (UserDAO) context.getBean("userDAO");
+	private static final HttpHeaders responseHeaders = new HttpHeaders();
 	
 	@RequestMapping(value = "/user/login", method = RequestMethod.POST) 
 	public ResponseEntity<User> loginUser(
@@ -25,7 +26,6 @@ public class UserController {
 			@RequestParam("password") String password) 
 	{
 		User user = userDAO.findByUsername(username);
-		HttpHeaders responseHeaders = new HttpHeaders();
 		
 		if(user != null) {
 			if (user.getPassword().equals(password)) // 로그인 성공
@@ -38,11 +38,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/user/signup", method = RequestMethod.POST)
-	public User signupUser(
+	public ResponseEntity<User> signupUser(
 			@RequestParam("username") String username,
 			@RequestParam("password") String password)
 	{
 		User user = userDAO.signupUser(new User(0, username, password, 0));
-		return user;
+		return new ResponseEntity<User>(user, responseHeaders, HttpStatus.OK);
 	}
 }

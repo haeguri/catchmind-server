@@ -29,6 +29,7 @@ import java.util.Map;
 public class RoomController {
 	private static final ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
 	private static final RoomDAO roomDAO = (RoomDAO) context.getBean("roomDAO");
+	private static final UserDAO userDAO = (UserDAO) context.getBean("userDAO");
 
 	// /greeting에 대한 요청들을 greeting() 메서드로 매핑된다.
 	// @RequestMapping GET, PUT, POST 등의 메서드들을 가리지 않는다.
@@ -60,22 +61,25 @@ public class RoomController {
 			@RequestParam("title") String title,
 			@RequestParam("limit_num") int limit_num,
 			@RequestParam("current_num") int current_num,
-			@RequestParam("is_playing") int is_playing)
+			@RequestParam("is_playing") int is_playing,
+			@RequestParam("host") int host_id)
 		{
-//		id, title등 8ㅕ8ㅑㅕ8ㅕㅑㅕㅑ8ㅕ78ㅑㅕ7Room 
-		Room room = roomDAO.insert(new Room(0, title, limit_num, current_num, is_playing));
-//		System.out.println("room:"+room);
-//		roomDAO.insert(new Room({
-//			
-//		}));
-//		System.out.println("CreateRoom" + roomId);
-//		Room room1 = roomDAO.insert(new Room(
-//					
-//				));
-//		return room1;
+		Room room = roomDAO.makeRoom(new Room(0, title, limit_num, current_num, 0));
+//		User(Host)의 current_room을 생성했던 방의 id로 업데이트해준다.
+		userDAO.updateCurrentRoom(room.getId(), host_id);
 		return room;
 	}
-
+	
+	@RequestMapping(value = "/room/enter", method = RequestMethod.POST)
+	public Room enterRoom(
+			@RequestParam("user_id") int user_id,
+			@RequestParam("room_id") int room_id)
+	{
+		Room room = roomDAO.enterRoom(room_id)
+		userDAO.updateCurrentRoom(room_id, user_id);
+		
+		return room;
+	}
 	
 
 	// @RequestParam은 쿼리 스트링 파라메터 "name"의 값을 greeting() 메서드의 "name" 파라메터로 바인드한다.

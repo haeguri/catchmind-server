@@ -9,4 +9,5 @@ public interface UserDAO {
 	public User signupUser(User user);
 	public Set<User> findAllUser();
 	public User findByUsername(String username);
+	public void updateCurrentRoom(int roomId, int userId);
 }
