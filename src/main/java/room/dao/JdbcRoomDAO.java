@@ -143,9 +143,9 @@ public class JdbcRoomDAO implements RoomDAO{
 			ps.setInt(1,  roomId);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
-				if ( rs.getInt("current_num") >= rs.getInt("limit_num") )
+				if(rs.getInt("current_num") >= rs.getInt("limit_num"))
 					return false;
-			}
+			};
 			ps.close();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

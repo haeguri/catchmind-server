@@ -89,11 +89,10 @@ public class RoomController {
 			@RequestParam("user_id") int user_id,
 			@RequestParam("room_id") int room_id)
 	{
-		if (roomDAO.enterRoom(room_id) == true) {
-			userDAO.updateCurrentRoom(room_id, user_id);
+		if(roomDAO.enterRoom(room_id) == true) {
 			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.BAD_REQUEST);
+		}else {
+			return new ResponseEntity<Boolean>(false, responseHeaders, HttpStatus.BAD_REQUEST);
 		}
 //		입장한 방의 id를 사용자의 current_room 필드에 저장한다.
 	}
