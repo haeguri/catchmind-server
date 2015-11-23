@@ -74,28 +74,46 @@ public class RoomController {
 	public Room makeRoom(
 			@RequestParam("title") String title,
 			@RequestParam("limit_num") int limit_num,
-			@RequestParam("current_num") int current_num,
-			@RequestParam("is_playing") int is_playing,
 			@RequestParam("host") int host_id)
 		{
-		Room room = roomDAO.makeRoom(new Room(0, title, limit_num, current_num, 0));
+		Room room = roomDAO.makeRoom(new Room(0, title, limit_num, 1, 0));
 //		User(Host)의 current_room을 생성했던 방의 id로 업데이트해준다.
-		userDAO.updateCurrentRoom(room.getId(), host_id);
+		userDAO.enterRoom(room.getId(), host_id);
 		return room;
 	}
 	
 	@RequestMapping(value = "/room/enter", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> enterRoom(
+	public ResponseEntity<Object> enterRoom(
 			@RequestParam("user_id") int user_id,
 			@RequestParam("room_id") int room_id)
 	{
-		if(roomDAO.enterRoom(room_id) == true) {
-			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.OK);
+		if(roomDAO.enterRoom(room_id)) {
+			System.out.println("true");
+			userDAO.enterRoom(room_id, user_id);
+			return new ResponseEntity<>(null, responseHeaders, HttpStatus.OK);
 		}else {
-			return new ResponseEntity<Boolean>(false, responseHeaders, HttpStatus.BAD_REQUEST);
+			System.out.println("false");
+			return new ResponseEntity<>(null, responseHeaders, HttpStatus.BAD_REQUEST);
 		}
 //		입장한 방의 id를 사용자의 current_room 필드에 저장한다.
 	}
+	
+	@RequestMapping(value = "/room/exit", method = RequestMethod.POST)
+	public ResponseEntity<Boolean> exitRoom(
+			@RequestParam("user_id") int user_id,
+			@RequestParam("room_id") int room_id)
+	{
+		System.out.println("room exit");
+		userDAO.exitRoom(room_id, user_id);
+		Boolean delete_rst = roomDAO.exitRoom(user_id, room_id);
+		
+		if(delete_rst) {
+			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.NO_CONTENT);
+		} else {
+			return new ResponseEntity<Boolean>(false, responseHeaders, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	
 
 	// @RequestParam은 쿼리 스트링 파라메터 "name"의 값을 greeting() 메서드의 "name" 파라메터로 바인드한다.

@@ -130,7 +130,7 @@ public class JdbcUserDAO implements UserDAO{
 		}
 	}
 	
-	public void updateCurrentRoom(int roomId, int userId) {
+	public void enterRoom(int roomId, int userId) {
 		String sql = "UPDATE user SET current_room = ? WHERE id = ?";
 		
 		Connection conn = null;
@@ -153,8 +153,31 @@ public class JdbcUserDAO implements UserDAO{
 			}
 		}	
 	}
+	
+	public void exitRoom(int roomId, int userId) {
+		String sql = "UPDATE user SET current_room = NULL WHERE id = ?";
+		
+		Connection conn = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, userId);
+			ps.executeUpdate();
+			
+			ps.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}	
+	}
 
-public Set<User> findUsersInRoom(int roomId) {
+	public Set<User> findUsersInRoom(int roomId) {
 		
 		String sql = "SELECT * FROM user where current_room = ?";
 		User user = null;

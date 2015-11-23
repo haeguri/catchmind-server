@@ -38,8 +38,6 @@ public class JdbcRoomDAO implements RoomDAO{
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
 				room.setId(rs.getInt(1));
-				//
-				
 			}
 			rs.close();
 			ps.close();
@@ -173,5 +171,41 @@ public class JdbcRoomDAO implements RoomDAO{
 				} catch (SQLException e) {}
 			}
 		}
+	}
+	
+	public Boolean exitRoom(int userId, int roomId) {
+//		String deleteSql = "DELETE FROM room WHERE id = ?";
+		String deleteSql = "DELETE FROM room WHERE id = ?";
+		Connection conn = null;
+		
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement preparedStatement = conn.prepareStatement(deleteSql);
+			preparedStatement.setInt(1,  roomId);
+			System.out.println("before");
+			int result = preparedStatement.executeUpdate();
+			System.out.println("after");
+			if(result != 0) {
+				System.out.println("Room delete successfully. @@" + result);
+				preparedStatement.close();
+				return true;
+			} else {
+				System.out.println("Room cannot delete.@@" + result);
+				preparedStatement.close();
+				return false;
+			}
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+		
+		
 	}
 }
