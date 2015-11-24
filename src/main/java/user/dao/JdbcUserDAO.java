@@ -89,9 +89,9 @@ public class JdbcUserDAO implements UserDAO{
 		}
 	}
 	
-	public User findByUsername(String username) {
+	public User getUser(int userId) {
 		
-		String sql = "SELECT * FROM user WHERE username = ?;";
+		String sql = "SELECT * FROM user WHERE id = ?;";
 		
 		User user = null;
 		Connection conn = null;
@@ -99,7 +99,7 @@ public class JdbcUserDAO implements UserDAO{
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, username);
+			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()) {
 				System.out.println("rs.next() is true.");
@@ -176,6 +176,8 @@ public class JdbcUserDAO implements UserDAO{
 			}
 		}	
 	}
+	
+	
 
 	public Set<User> findUsersInRoom(int roomId) {
 		

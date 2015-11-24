@@ -3,6 +3,7 @@
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/hello/UserController.java
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/user/model/User.java
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/hello/RoomController.java
+/Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/socket/ServerBackground.java
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/hello/Application.java
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/user/dao/UserDAO.java
 /Users/haegyun/Workspace/Spring/gs-consuming-rest-initial/src/main/java/room/dao/JdbcRoomDAO.java

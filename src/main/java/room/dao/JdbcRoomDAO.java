@@ -173,8 +173,7 @@ public class JdbcRoomDAO implements RoomDAO{
 		}
 	}
 	
-	public Boolean exitRoom(int userId, int roomId) {
-//		String deleteSql = "DELETE FROM room WHERE id = ?";
+	public Boolean hostExitRoom(int roomId) {
 		String deleteSql = "DELETE FROM room WHERE id = ?";
 		Connection conn = null;
 		
@@ -204,8 +203,29 @@ public class JdbcRoomDAO implements RoomDAO{
 					conn.close();
 				} catch (SQLException e) {}
 			}
-		}
+		}	
+	}
+	
+	public void memberExitRoom(int roomId) {
+		String updateSql = "UPDATE room SET current_num = current_num-1 WHERE id = ?";
+		Connection conn = null;
 		
 		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement preparedStatement = conn.prepareStatement(updateSql);
+			preparedStatement.setInt(1,  roomId);
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}	
 	}
 }

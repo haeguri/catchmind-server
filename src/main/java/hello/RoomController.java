@@ -63,7 +63,7 @@ public class RoomController {
 		return room1;
 	}
 
-	@RequestMapping(value = "/room/{roomId}/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/rooms/{roomId}/users", method = RequestMethod.GET)
 	public ResponseEntity<Set<User>> findUsersInRoom(@PathVariable("roomId") int roomId) {
 		Set<User> users = userDAO.findUsersInRoom(roomId);
 		
@@ -99,18 +99,19 @@ public class RoomController {
 	}
 	
 	@RequestMapping(value = "/room/exit", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> exitRoom(
+	public ResponseEntity<Object> exitRoom(
 			@RequestParam("user_id") int user_id,
-			@RequestParam("room_id") int room_id)
+			@RequestParam("room_id") int room_id,
+			@RequestParam("is_host") Boolean is_host)
 	{
-		System.out.println("room exit");
+		System.out.println("room exit" + is_host);
 		userDAO.exitRoom(room_id, user_id);
-		Boolean delete_rst = roomDAO.exitRoom(user_id, room_id);
-		
-		if(delete_rst) {
-			return new ResponseEntity<Boolean>(true, responseHeaders, HttpStatus.NO_CONTENT);
+		if (is_host) {
+			roomDAO.hostExitRoom(room_id);
+			return new ResponseEntity<>(null, responseHeaders, HttpStatus.NO_CONTENT);
 		} else {
-			return new ResponseEntity<Boolean>(false, responseHeaders, HttpStatus.BAD_REQUEST);
+			roomDAO.memberExitRoom(room_id);
+			return new ResponseEntity<>(null, responseHeaders, HttpStatus.OK);
 		}
 	}
 	
