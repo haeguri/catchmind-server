@@ -48,7 +48,7 @@ public class UserController {
 			@RequestParam("username") String username,
 			@RequestParam("password") String password)
 	{
-		User user = userDAO.signupUser(new User(0, username, password, 0));
+		User user = userDAO.signup(username, password);
 		return new ResponseEntity<User>(user, responseHeaders, HttpStatus.OK);
 	}
 	

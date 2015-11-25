@@ -21,7 +21,7 @@ public class JdbcUserDAO implements UserDAO{
 	}
 	
 	public User login(String username, String password) {
-		String sql = "SELECT * FROM user WHERE username = ? and password = ?;";
+		String sql = "SELECT id, username, password, current_room FROM user WHERE username = ? and password = ?;";
 		
 		Connection conn = null;
 		User user = null;
@@ -62,21 +62,32 @@ public class JdbcUserDAO implements UserDAO{
 		}
 	}
 	
-	public User signupUser(User user) {
+	public User signup(String username, String password) {
 		String sql = "INSERT INTO user " + 
 				"(username, password) " +
 				"VALUES (?, ?)";
+		String select_sql = "SELECT id, username, current_room FROM user WHERE id = ?";
 		Connection conn = null;
+		User user = null;
 		
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, user.getUsername());
-			ps.setString(2, user.getPassword());
+			ps.setString(1, username);
+			ps.setString(2, password);
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
-				user.setId(rs.getInt(1));
+				ps = conn.prepareStatement(select_sql, Statement.RETURN_GENERATED_KEYS);
+				ps.setInt(1, rs.getInt(1));
+				rs = ps.executeQuery();
+				if(rs.next()) {
+					user = new User(
+					rs.getInt("id"),
+					rs.getString("username"),
+					"",
+					rs.getInt("current_room"));	
+				}			
 			}
 			rs.close();
 			ps.close();
@@ -97,7 +108,7 @@ public class JdbcUserDAO implements UserDAO{
 	
 	public Set<User> findWatingUsers() {
 		
-		String sql = "SELECT * FROM user WHERE current_room IS NULL";
+		String sql = "SELECT id, password, current_room FROM user WHERE current_room IS NULL";
 		User user = null;
 		Set<User> users = new HashSet<>();
 		
@@ -111,7 +122,7 @@ public class JdbcUserDAO implements UserDAO{
 				user = new User(
 						rs.getInt("id"),
 						rs.getString("username"),
-						rs.getString("password"),
+						"",
 						rs.getInt("current_room")
 				);
 				users.add(user);
@@ -133,7 +144,7 @@ public class JdbcUserDAO implements UserDAO{
 	
 	public User getUser(int userId) {
 		
-		String sql = "SELECT * FROM user WHERE id = ?;";
+		String sql = "SELECT id, username, current_room FROM user WHERE id = ?;";
 		
 		User user = null;
 		Connection conn = null;
@@ -148,7 +159,7 @@ public class JdbcUserDAO implements UserDAO{
 				user = new User(
 						rs.getInt("id"),
 						rs.getString("username"),
-						rs.getString("password"),
+						"",
 						rs.getInt("current_room")
 				);
 				System.out.println("Before return" + user);
@@ -223,7 +234,7 @@ public class JdbcUserDAO implements UserDAO{
 
 	public Set<User> findUsersInRoom(int roomId) {
 		
-		String sql = "SELECT * FROM user where current_room = ?";
+		String sql = "SELECT id, username, current_room FROM user where current_room = ?";
 		User user = null;
 		Set<User> users = new HashSet<>();
 		
@@ -238,7 +249,7 @@ public class JdbcUserDAO implements UserDAO{
 				user = new User(
 						rs.getInt("id"),
 						rs.getString("username"),
-						rs.getString("password"),
+						"",
 						rs.getInt("current_room")
 				);
 				users.add(user);

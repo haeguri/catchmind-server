@@ -7,7 +7,7 @@ import user.model.User;
 
 public interface UserDAO {
 	public User login(String username, String password);
-	public User signupUser(User user);
+	public User signup(String username, String password);
 	public User getUser(int userId);
 	public Set<User> findWatingUsers();
 	public Set<User> findUsersInRoom(int roomId);
