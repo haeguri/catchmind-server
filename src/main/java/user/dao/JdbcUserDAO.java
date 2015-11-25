@@ -20,6 +20,48 @@ public class JdbcUserDAO implements UserDAO{
 		this.dataSource = dataSource;
 	}
 	
+	public User login(String username, String password) {
+		String sql = "SELECT * FROM user WHERE username = ? and password = ?;";
+		
+		Connection conn = null;
+		User user = null;
+		
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, username);
+			ps.setString(2, password);
+			
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				System.out.println("rs.next() is true.");
+				user = new User(
+						rs.getInt("id"),
+						rs.getString("username"),
+						rs.getString("password"),
+						rs.getInt("current_room")
+				);
+				System.out.println("Before return" + user);
+				rs.close();
+				ps.close();
+				return user;
+			} else {
+				System.out.println("rs.next() is false.");
+				rs.close();
+				ps.close();
+				return null;
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+	
 	public User signupUser(User user) {
 		String sql = "INSERT INTO user " + 
 				"(username, password) " +

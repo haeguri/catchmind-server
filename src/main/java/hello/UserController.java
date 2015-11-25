@@ -26,22 +26,22 @@ public class UserController {
 	private static final UserDAO userDAO = (UserDAO) context.getBean("userDAO");
 	private static final HttpHeaders responseHeaders = new HttpHeaders();
 	
-//	@RequestMapping(value = "/user/login", method = RequestMethod.POST) 
-//	public ResponseEntity<User> loginUser(
-//			@RequestParam("username") String username,
-//			@RequestParam("password") String password) 
-//	{
-////		User user = userDAO.(username);
-//		
-//		if(user != null) {
-//			if (user.getPassword().equals(password)) // 로그인 성공
-//				return new ResponseEntity<User>(user, responseHeaders, HttpStatus.OK);
-//			else // 로그인 실패 (입력한 password 다) 
-//				return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
-//		} else { // 로그인 실패 (입력한 username을 가진 사용자없음)
-//			return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
-//		}
-//	}
+	@RequestMapping(value = "/user/login", method = RequestMethod.POST) 
+	public ResponseEntity<User> loginUser(
+			@RequestParam("username") String username,
+			@RequestParam("password") String password) 
+	{
+		User user = userDAO.login(username, password);
+		
+		if(user != null) {
+			if (user.getPassword().equals(password)) // 로그인 성공
+				return new ResponseEntity<User>(user, responseHeaders, HttpStatus.OK);
+			else // 로그인 실패 (입력한 password 다) 
+				return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
+		} else { // 로그인 실패 (입력한 username을 가진 사용자없음)
+			return new ResponseEntity<User>(null, responseHeaders, HttpStatus.NOT_FOUND);
+		}
+	}
 	
 	@RequestMapping(value = "/user/signup", method = RequestMethod.POST)
 	public ResponseEntity<User> signupUser(

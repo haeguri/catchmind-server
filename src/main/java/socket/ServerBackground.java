@@ -54,13 +54,14 @@ public class ServerBackground {
 
     // 맵의 내용(클라이언트) 저장과 삭제.
     public void addClient(String nick, DataOutputStream out) {
-        sendMsg(nick + "님이 접속하셨습니다.");
+        sendMsg(nick + "님이 접속하셨습니다. \n");
         clientMap.put(nick, out);
     }
 
     public void removeClient(String nick){
         sendMsg(nick + "님이 나가셨습니다.");
         clientMap.remove(nick);
+        System.out.println("접속 종료");
     }
 
     public void sendMsg(String msg) {
@@ -95,6 +96,7 @@ public class ServerBackground {
                 addClient(nick, out);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("리시버 종료 ");
             }
         }
 
@@ -106,7 +108,6 @@ public class ServerBackground {
                 while(in!=null) {
                     msg = in.readUTF();
                     sendMsg(msg);
-//                    gui.appendMsg(msg);
                 }
             }catch (IOException e) {
 //              사용자 접속종료시 여기서 에러 발생. 그럼 나간거다. 그럼 여기서 remove 클라이언트.

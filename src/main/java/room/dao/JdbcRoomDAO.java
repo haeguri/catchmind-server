@@ -80,7 +80,6 @@ public class JdbcRoomDAO implements RoomDAO{
 			}
 			rs.close();
 			ps.close();
-			System.out.println(Arrays.toString(rooms.toArray()));
 			return rooms;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -182,9 +181,7 @@ public class JdbcRoomDAO implements RoomDAO{
 			conn = dataSource.getConnection();
 			PreparedStatement preparedStatement = conn.prepareStatement(deleteSql);
 			preparedStatement.setInt(1,  roomId);
-			System.out.println("before");
 			int result = preparedStatement.executeUpdate();
-			System.out.println("after");
 			if(result != 0) {
 				System.out.println("Room delete successfully. @@" + result);
 				preparedStatement.close();

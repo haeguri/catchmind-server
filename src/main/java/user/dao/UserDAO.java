@@ -6,6 +6,7 @@ import user.model.User;
 
 
 public interface UserDAO {
+	public User login(String username, String password);
 	public User signupUser(User user);
 	public User getUser(int userId);
 	public Set<User> findWatingUsers();
