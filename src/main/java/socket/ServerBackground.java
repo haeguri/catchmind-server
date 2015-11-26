@@ -10,25 +10,12 @@ import java.util.*;
 
 public class ServerBackground {
     private ServerSocket serverChatSocket;
-    private ServerSocket serverPaintSocket;
     private Socket chatSocket;
-    private Socket paintSocket;
     
     private String chatMsg;
-    private String paintInfo;
 
     //  03. 사용자들의 정보를 저장하는 맵입니다.
     private Map<String, DataOutputStream> chatClientMap = new HashMap<String, DataOutputStream>();
-    private Map<String, DataOutputStream> paintClientMap = new HashMap<String, DataOutputStream>();
-    
-//  다중 채팅
-//  서버에서는 클라이언트가 접속을 하면, 서버측에서는 소켓이 발생한다.
-//  이 리시버는 하나의 클래스이자, 쓰레드 역할로 돌아간다.
-//  이것들이 여러개가 돌아가며 각각의 소켓을 가지고 있는데.
-//  클라이언트가 해주는 말을 듣고 있다가 메세지가 들어오면 서버에 전송을 시켜주면서.
-//  서버는 클라이언트들이 접속할 때 가지고 있던 소켓정보들을 맵에다 저장해둔다.
-//  그 맵에다 이 메세지를 뿌려주게 되면 맵에 있는 클라이언트 주소를 통해
-//  다시 메세지를 보내주는 역할을 한다.
 
     public void setting() {
         try {
@@ -54,12 +41,12 @@ public class ServerBackground {
 
     // 맵의 내용(클라이언트) 저장과 삭제.
     public void addChatClient(String nick, DataOutputStream out) {
-        sendMsg("chatSocket" + nick + "님이 접속하셨습니다. \n");
+        sendMsg(nick + "님이 접속하셨습니다. \n");
         chatClientMap.put(nick, out);
     }
 
     public void removeChatClient(String nick){
-        sendMsg("chatSocket" + nick + "님이 나가셨습니다.");
+        sendMsg(nick + "님이 나가셨습니다.");
         chatClientMap.remove(nick);
         System.out.println("chatSocket" + "접속 종료");
     }
@@ -110,10 +97,5 @@ public class ServerBackground {
             }
         }
     }
-    
-    
-    
-
-
 }
 

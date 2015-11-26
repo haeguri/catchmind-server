@@ -22,10 +22,8 @@ public class JdbcUserDAO implements UserDAO{
 	
 	public User login(String username, String password) {
 		String sql = "SELECT id, username, password, current_room FROM user WHERE username = ? and password = ?;";
-		
 		Connection conn = null;
 		User user = null;
-		
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -53,11 +51,9 @@ public class JdbcUserDAO implements UserDAO{
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {}
+		} finally { 
+			if (conn != null) { 
+				try { conn.close(); } catch (SQLException e) {} 
 			}
 		}
 	}
