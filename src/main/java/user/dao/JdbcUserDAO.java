@@ -120,10 +120,10 @@ public class JdbcUserDAO implements UserDAO{
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				user = new User(
-						rs.getInt("id"),
-						rs.getString("username"),
+						rs.getInt(1),
+						rs.getString(2),
 						"",
-						rs.getInt("current_room")
+						rs.getInt(3)
 				);
 				users.add(user);
 			}

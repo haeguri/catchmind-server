@@ -15,20 +15,17 @@ public class ChatReceiver implements Runnable {
 	
 	Thread chatThread;
 	private ServerSocket serverChatSocket;
-    private ServerSocket serverPaintSocket;
     private Socket chatSocket;
-    private Socket paintSocket;
     
     private String chatMsg;
-    private String paintInfo;
 
     //  03. 사용자들의 정보를 저장하는 맵입니다.
     private Map<String, DataOutputStream> chatClientMap = new HashMap<String, DataOutputStream>();
-    private Map<String, DataOutputStream> paintClientMap = new HashMap<String, DataOutputStream>();
-
-    private DataInputStream in;
-    private DataOutputStream out;
+    
     private String nick;
+    
+    DataOutputStream out;
+	DataInputStream in;
         
     // 맵의 내용(클라이언트) 저장과 삭제.
     public void addChatClient(String nick, DataOutputStream out) {
@@ -50,6 +47,7 @@ public class ChatReceiver implements Runnable {
             key = it.next();
             try {
             	chatClientMap.get(key).writeUTF(msg);
+            	out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,10 +57,9 @@ public class ChatReceiver implements Runnable {
 
     public ChatReceiver() {
     	try {
+    		Collections.synchronizedMap(chatClientMap); // 교통정리 해주는 코드^^
 			serverChatSocket = new ServerSocket(7777);
 			while(true) {
-
-	        	Collections.synchronizedMap(chatClientMap); // 교통정리 해주는 코드^^
 	        	
 	        	chatThread = new Thread(this, "Chat Tread");
 	        	
@@ -91,7 +88,6 @@ public class ChatReceiver implements Runnable {
 
     // 리시버가 할일은 자기 혼자서 네트워크 처리 계속..듣기..처리해주는 것
     public void run() {
-
         try {    		
             while(in!=null) {
             	System.out.println("런 안의 와일");
