@@ -108,7 +108,7 @@ public class JdbcUserDAO implements UserDAO{
 	
 	public Set<User> findWatingUsers() {
 		
-		String sql = "SELECT id, password, current_room FROM user WHERE current_room IS NULL";
+		String sql = "SELECT id, username, current_room FROM user WHERE current_room IS NULL";
 		User user = null;
 		Set<User> users = new HashSet<>();
 		
