@@ -46,12 +46,13 @@ public class ServerBackground {
     }
 
     public void removeChatClient(String nick){
-        sendMsg(nick + "님이 나가셨습니다.");
+        sendMsg(nick + "님이 나가셨습니다. \n");
         chatClientMap.remove(nick);
         System.out.println("chatSocket" + "접속 종료");
     }
 
     public void sendMsg(String msg) {
+
         Iterator<String> it = chatClientMap.keySet().iterator();
         String key = "";
 
