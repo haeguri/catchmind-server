@@ -90,7 +90,6 @@ public class ServerBackground {
             try {
                 while(in!=null) {
                     chatMsg = in.readUTF();
-                    System.out.println("read msg from client" + chatMsg);
                     sendMsg(chatMsg);
                 }
             }catch (IOException e) {
