@@ -252,7 +252,6 @@ public class JdbcUserDAO implements UserDAO{
 			}
 			rs.close();
 			ps.close();
-			System.out.println(Arrays.toString(users.toArray()));
 			return users;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

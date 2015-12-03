@@ -54,7 +54,6 @@ public class UserController {
 //	로비에 대기중인 사용자의 목록을 반환하는 함수.
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public ResponseEntity<Set<User>> getUsers() {
-		System.out.println(userDAO.findWatingUsers());
 		
 		Set<User> users = userDAO.findWatingUsers();
 		if( users.isEmpty() == false) {
@@ -69,7 +68,6 @@ public class UserController {
 	public ResponseEntity<User> getUser(
 			@PathVariable("userId") int userId) 
 	{
-		System.out.println(userDAO.getUser(userId));
 		
 		User user = userDAO.getUser(userId);
 		if( user != null) {
