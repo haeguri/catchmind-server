@@ -60,6 +60,7 @@ public class ServerBackground {
             key = it.next();
             try {
             	chatClientMap.get(key).writeUTF(msg);
+                chatClientMap.get(key).flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -78,7 +79,7 @@ public class ServerBackground {
 
     		out = new DataOutputStream(chatSocket.getOutputStream());
     		in = new DataInputStream(chatSocket.getInputStream());
-    	
+
     		nick = in.readUTF();
             addChatClient(nick, out);    
         }
@@ -88,8 +89,8 @@ public class ServerBackground {
         public void run() {
             try {
                 while(in!=null) {
-                	System.out.println("런 안의 와일");
                     chatMsg = in.readUTF();
+                    System.out.println("read msg from client" + chatMsg);
                     sendMsg(chatMsg);
                 }
             }catch (IOException e) {
