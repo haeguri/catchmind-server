@@ -60,7 +60,6 @@ public class ServerBackground {
             key = it.next();
             try {
             	chatClientMap.get(key).writeUTF(msg);
-                chatClientMap.get(key).flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
